@@ -66,7 +66,10 @@ my_extractor = FeatureExtractor(data[6:10])
 ################# n-grame ###############
 
 #################### GET ALL Features#############
+
 def model():
+	"""TODO MLmodel
+	"""
 	feature_table = get_feature(data)
 	print(feature_table)
 
