@@ -26,9 +26,14 @@ my_extractor = FeatureExtractor(data[6:10])
 ######################## n-grame#########################
 #from prepare_models import n_grame_train
 #n_grame_train(data[1000:])
-n_grame_corr = my_extractor.big_grame()
-print(n_grame_corr)
+#n_grame_corr = my_extractor.big_grame()
+#print(n_grame_corr)
 #########################n grame end but have to decrease its dimension#################
 
 
 ########################hmm leran############################
+
+########################entropy######################
+entropy_corr = my_extractor.entropy()
+print(entropy_corr)
+########################entropy end###################

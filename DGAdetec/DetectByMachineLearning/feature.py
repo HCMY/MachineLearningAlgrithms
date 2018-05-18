@@ -3,8 +3,12 @@ import re
 import os
 import numpy as np
 import pandas as pd
+import math
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.externals import joblib
+from collections import Counter
+
+
 
 import dataset
 
@@ -19,10 +23,10 @@ class FeatureExtractor(object):
 	
 	def count_aeiou(self):
 		count_result = []
-		for doamin in self._domain_list:
-			len_aeiou = len(re.findall(r'[aeiou]',doamin.lower()))
-			aeiou_rate = (0.0+len_aeiou)/len(doamin)
-			tmp = [doamin, len(doamin), len_aeiou, aeiou_rate]
+		for domain in self._domain_list:
+			len_aeiou = len(re.findall(r'[aeiou]',domain.lower()))
+			aeiou_rate = (0.0+len_aeiou)/len(domain)
+			tmp = [domain, len(domain), len_aeiou, aeiou_rate]
 			count_result.append(tmp)
 
 		count_result = pd.DataFrame(count_result, 
@@ -35,10 +39,10 @@ class FeatureExtractor(object):
 	
 	def unique_char_rate(self):
 		unique_rate_list = []
-		for doamin in self._domain_list:
-			unique_len = len(set(doamin))
-			unique_rate = (unique_len+0.0)/len(doamin)
-			tmp = [doamin, unique_len, unique_rate]
+		for domain in self._domain_list:
+			unique_len = len(set(domain))
+			unique_rate = (unique_len+0.0)/len(domain)
+			tmp = [domain, unique_len, unique_rate]
 			unique_rate_list.append(tmp)
 
 		unique_rate_df = pd.DataFrame(unique_rate_list, 
@@ -47,13 +51,13 @@ class FeatureExtractor(object):
 
 
 	# calculate double domain's jarccard index
-	def _jarccard2domain(self, doamin_aplha, doamin_beta):
+	def _jarccard2domain(self, domain_aplha, domain_beta):
 		"""parameters:
 		domain_alpha/beta: string-like domain
 		returns: this couples jarccard index
 		"""
-		listit_domain_alpha = list(doamin_aplha)
-		listit_domain_beta = list(doamin_beta)
+		listit_domain_alpha = list(domain_aplha)
+		listit_domain_beta = list(domain_beta)
 
 		abs_intersection = np.intersect1d(listit_domain_alpha, listit_domain_beta).shape[0]
 		abs_union = np.union1d(listit_domain_alpha, listit_domain_beta).shape[0]
@@ -62,7 +66,7 @@ class FeatureExtractor(object):
 
 
 	# calculate each fake domain's average corresponding jarccard index 
-	# with positive doamin collection
+	# with positive domain collection
 	def jarccard_index(self, positive_domain_list):
 		"""parameters:
 		positive_domain_list: positve samples list, 1Darray like
@@ -105,13 +109,30 @@ class FeatureExtractor(object):
 		vec = grame_model.transform(np.array(self._domain_list))
 
 		df = pd.DataFrame(vec.toarray(), columns=grame_model.get_feature_names())
-		doamins = pd.DataFrame(self._domain_list, columns=['domain'])
-		df = pd.concat([doamins, df], axis=1)
+		domains = pd.DataFrame(self._domain_list, columns=['domain'])
+		df = pd.concat([domains, df], axis=1)
 		
 		return df
 
 	def tripple_gram(self):
 		pass
+
+
+
+	#calculate entropy of domains entropy
+	def entropy(self):
+		entropy_list = []
+		for domain in self._domain_list:
+			p, lns = Counter(domain), float(len(domain))
+			entropy = (-sum(count/lns * math.log(count/lns, 2) for count in p.values()))
+			tmp = [domain, entropy]
+			entropy_list.append(tmp)
+
+		entropy_df = pd.DataFrame(entropy_list, columns=['domain','entropy'])
+		return entropy_df
+
+
+	
 	
 
 		
