@@ -17,10 +17,18 @@ class FeatureExtractor(object):
 	def __init__(self, domain_list):
 		self._domain_list = list(set(domain_list))
 		self._positive_domain_list = None
-		self._n_grame_model_path = './models/n_grame.pkl'
+		self._big_grame_model_path = './models/big_grame.pkl'
+		self._triple_grame_model_path = './models/tripple_gram.pkl'
+		self._positive_grame_model_path = './models/positive_grame.pkl'
+		self._word_grame_model_path = './models/word_grame.pkl'
+		self._positive_count_matrix = './models/positive_count_matrix.npy'
+		self._word_count_matrix = './models/word_count_matrix.npy' 
 
 
-	
+	def _check_files(self, **args):
+		pass
+
+
 	def count_aeiou(self):
 		count_result = []
 		for domain in self._domain_list:
@@ -94,7 +102,7 @@ class FeatureExtractor(object):
 	def hmm_index(self):
 		pass
 
-
+	'''
 	# calculate n_grame of each domains
 	# notes: you should update this model frequency
 	# 		decrease the dimension of the transformed data set
@@ -116,7 +124,8 @@ class FeatureExtractor(object):
 
 	def tripple_gram(self):
 		pass
-
+	
+	'''
 
 
 	#calculate entropy of domains entropy
@@ -132,7 +141,32 @@ class FeatureExtractor(object):
 		return entropy_df
 
 
-	
+
+	def n_grame(self):
+		self._check_files(self._positive_count_matrix,
+						  self._positive_grame_model_path,
+						  self._word_grame_model_path,
+						  self._word_count_matrix)
+
+		positive_count_matrix = np.load(self._positive_count_matrix)
+		positive_vectorizer = joblib.load(self._positive_grame_model_path)
+		word_count_matrix = np.load(self._word_count_matrix)
+		word_vectorizer = joblib.load(self._word_grame_model_path)
+
+		positive_grames = positive_count_matrix*positive_vectorizer.transform(self._domain_list)
+		word_grames = word_count_matrix*word_vectorizer.transform(self._domain_list)
+		diff = positive_grames - word_grames
+		domains = np.asarray(self._domain_list)
+
+		n_grame_df = pd.concat([domains, positive_grames, word_grames, diff],
+								axis=1, 
+								names=['domain','positive_grames','word_grames','diff'])
+
+		return n_grame_df
+
+
+
+
 	
 
 		

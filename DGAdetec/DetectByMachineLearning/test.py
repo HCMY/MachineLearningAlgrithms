@@ -34,6 +34,6 @@ my_extractor = FeatureExtractor(data[6:10])
 ########################hmm leran############################
 
 ########################entropy######################
-entropy_corr = my_extractor.entropy()
-print(entropy_corr)
+#entropy_corr = my_extractor.entropy()
+#print(entropy_corr)
 ########################entropy end###################
