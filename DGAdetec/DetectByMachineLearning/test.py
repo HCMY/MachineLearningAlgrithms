@@ -1,5 +1,8 @@
 import dataset
-from feature import FeatureExtractor
+import pandas as pd
+import numpy as np
+from feature import FeatureExtractor, get_feature
+
 ##############test load data##########
 data = dataset.load_simple_data()
 #data = data[1000:1010]
@@ -7,6 +10,23 @@ data = dataset.load_simple_data()
 
 ######################TEST Feature extractor###################
 my_extractor = FeatureExtractor(data[6:10])
+
+######################################################
+
+
+#TRAIN PREMODEL
+#from prepare_models import n_grame_train, positive_train, word_train
+#words = pd.read_csv('../datas/words.csv', names=['word'], header=None, dtype={'word': np.str}, encoding='utf-8')
+#words = words.applymap(lambda x: str(x).strip().lower())
+#words = words.dropna()
+#words = words.drop_duplicates()
+#word_train(words['word'].tolist())
+#
+#positive = pd.read_csv('../datas/aleax100k.csv', names=['domain'], header=None, dtype={'word': np.str}, encoding='utf-8')
+#positive = positive.dropna()
+#positive = positive.drop_duplicates()
+#positive_train(positive['domain'].tolist())
+
 ########################### AEIOU corresponding#####################
 #aeiou_corr_arr = my_extractor.count_aeiou()
 #print(aeiou_corr_arr)
@@ -24,8 +44,7 @@ my_extractor = FeatureExtractor(data[6:10])
 ##########################jarccard index##############
 
 ######################## n-grame#########################
-#from prepare_models import n_grame_train
-#n_grame_train(data[1000:])
+
 #n_grame_corr = my_extractor.big_grame()
 #print(n_grame_corr)
 #########################n grame end but have to decrease its dimension#################
@@ -37,3 +56,19 @@ my_extractor = FeatureExtractor(data[6:10])
 #entropy_corr = my_extractor.entropy()
 #print(entropy_corr)
 ########################entropy end###################
+
+
+################## n-grame #############
+#n_grame_corr = my_extractor.n_grame()
+#print(n_grame_corr)
+
+
+################# n-grame ###############
+
+#################### GET ALL Features#############
+def model():
+	feature_table = get_feature(data)
+	print(feature_table)
+
+if __name__ == '__main__':
+	model()

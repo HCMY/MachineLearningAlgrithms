@@ -20,20 +20,20 @@ def n_grame_train(big_domain, grame_range, model_name):
 def positive_train(big_domain):
 	vec = CountVectorizer(analyzer='char', ngram_range=(3,5), min_df=1e-5, max_df=1.0)
 	grame_model = vec.fit(big_domain)
-	joblib.dump('./models/positive_grame.pkl')
+	joblib.dump(grame_model, './models/positive_grame.pkl')
 	counts_matrix = grame_model.transform(big_domain)
 	positive_counts = np.log10(counts_matrix.sum(axis=0).getA1())
-	np.save('positive_count_matrix.npy', positive_count_matrix)
+	np.save('./models/positive_count_matrix.npy', positive_counts)
 
-def word_traon(word):
+def word_train(word):
 	vec = CountVectorizer(analyzer='char', ngram_range=(3,5), min_df=1e-5, max_df=1.0)
 	grame_model = vec.fit(word)
-	joblib.dump('./models/word_grame.pkl')
+	joblib.dump(grame_model, './models/word_grame.pkl')
 
-	counts_matrix = grame_model.transform(big_domain)
+	counts_matrix = grame_model.transform(word)
 	word_counts =  np.log10(counts_matrix.sum(axis=0).getA1())
-	np.save('positive_count_matrix.npy', positive_count_matrix)
-	
+	np.save('./models/word_count_matrix.npy', word_counts)
+
 
 
 

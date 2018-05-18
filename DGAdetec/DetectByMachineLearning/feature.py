@@ -7,7 +7,7 @@ import math
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.externals import joblib
 from collections import Counter
-
+from functools import reduce
 
 
 import dataset
@@ -23,11 +23,18 @@ class FeatureExtractor(object):
 		self._word_grame_model_path = './models/word_grame.pkl'
 		self._positive_count_matrix = './models/positive_count_matrix.npy'
 		self._word_count_matrix = './models/word_count_matrix.npy' 
+		self._positive_domain_list = self._load_positive_domain()
 
-
+	# check wether required files exis 
 	def _check_files(self, **args):
 		pass
 
+
+	def _load_positive_domain(self):
+		positive = pd.read_csv('../datas/aleax100k.csv', names=['domain'], header=None, dtype={'word': np.str}, encoding='utf-8')
+		positive = positive.dropna()
+		positive = positive.drop_duplicates()
+		return positive['domain'].tolist()
 
 	def count_aeiou(self):
 		count_result = []
@@ -75,12 +82,13 @@ class FeatureExtractor(object):
 
 	# calculate each fake domain's average corresponding jarccard index 
 	# with positive domain collection
-	def jarccard_index(self, positive_domain_list):
+	def jarccard_index(self):
 		"""parameters:
 		positive_domain_list: positve samples list, 1Darray like
 		return: a pandas DataFrame, 
 				contains domian col and average jarccard index col
 		"""
+		positive_domain_list=self._positive_domain_list
 		positive_domain_list = set(positive_domain_list)
 
 		jarccard_index_list = []
@@ -130,6 +138,10 @@ class FeatureExtractor(object):
 
 	#calculate entropy of domains entropy
 	def entropy(self):
+		"""parameters
+
+		return: entropy DataFrame [doamin, entropy]
+		"""
 		entropy_list = []
 		for domain in self._domain_list:
 			p, lns = Counter(domain), float(len(domain))
@@ -142,30 +154,74 @@ class FeatureExtractor(object):
 
 
 
+	#calculate grame(3,4,5) and its differ
 	def n_grame(self):
-		self._check_files(self._positive_count_matrix,
+		"""
+		return local grame differ with positive domains and word list
+		"""
+		'''self._check_files(self._positive_count_matrix,
 						  self._positive_grame_model_path,
 						  self._word_grame_model_path,
 						  self._word_count_matrix)
-
+		'''
 		positive_count_matrix = np.load(self._positive_count_matrix)
 		positive_vectorizer = joblib.load(self._positive_grame_model_path)
 		word_count_matrix = np.load(self._word_count_matrix)
 		word_vectorizer = joblib.load(self._word_grame_model_path)
 
-		positive_grames = positive_count_matrix*positive_vectorizer.transform(self._domain_list)
-		word_grames = word_count_matrix*word_vectorizer.transform(self._domain_list)
+		positive_grames = positive_count_matrix * positive_vectorizer.transform(self._domain_list).T
+		word_grames = word_count_matrix * word_vectorizer.transform(self._domain_list).T
 		diff = positive_grames - word_grames
 		domains = np.asarray(self._domain_list)
 
-		n_grame_df = pd.concat([domains, positive_grames, word_grames, diff],
-								axis=1, 
-								names=['domain','positive_grames','word_grames','diff'])
 
+		n_grame_nd = np.c_[domains, positive_grames, word_grames, diff]
+		n_grame_df = pd.DataFrame(n_grame_nd, columns=['domain','positive_grames','word_grames','diff'])
+		
 		return n_grame_df
 
 
 
+
+def get_feature(domain_list):
+	extractor = FeatureExtractor(domain_list)
+
+	print("extracting count_aeiou....")
+	aeiou_df = extractor.count_aeiou()
+	print("extracted count_aeiou....\n")
+
+	print("extracting unique_rate....")
+	unique_rate_df = extractor.unique_char_rate()
+	print("extracted unique_rate.....\n")
+
+	print("extracting jarccard_index....")
+	jarccard_index_df = extractor.jarccard_index()
+	print("extracted jarccard_index.....\n")
+
+	print("extracting entropy....")
+	entropy_df = extractor.entropy()
+	print("extracted entropy....\n")
+	
+	print("extracting n_grame....")
+	n_grame_df = extractor.n_grame()
+	print("extracted n_grame....\n")
+
+	print("merge all features on domains...")
+	multiple_df = [aeiou_df, unique_rate_df, 
+				  jarccard_index_df, entropy_df,
+				  n_grame_df]
+
+	df_final = reduce(lambda left,right: pd.merge(left,right,on='domain'), multiple_df)
+
+	# check df
+	std_rows = aeiou_df.shape[0]
+	df_final_rows = df_final.shape[0]
+
+	if std_rows != df_final_rows:
+		raise("row dosen't match after merged multiple_df")
+
+	df_final = df_final.round(3)
+	return df_final
 
 	
 
