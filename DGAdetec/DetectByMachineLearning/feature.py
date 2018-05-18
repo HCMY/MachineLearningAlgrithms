@@ -222,6 +222,7 @@ def get_feature(domain_list):
 
 	df_final = df_final.drop(['domain'],axis=1)
 	df_final = df_final.round(3)
+	
 	return np.array(df_final)
 
 	

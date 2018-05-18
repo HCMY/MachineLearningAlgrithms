@@ -75,7 +75,7 @@ def model():
 
 
 	data = dataset.load_data()
-	print("samples= ",data.shape)
+	print("all samples= ",data.shape)
 
 	print("dataY contains:", np.unique(data[:,1]))
 
@@ -83,10 +83,10 @@ def model():
 	data = data.drop_duplicates(subset='domain')
 	data = np.array(data)
 
-	trainX = data[:300,0]
-	trainY = data[:300,1].astype(int) 
-	testX = data[600:650, 0]
-	testY = data[600:650,1].astype(int)
+	trainX = data[:20000,0]
+	trainY = data[:20000,1].astype(int) 
+	testX = data[20000:21000, 0]
+	testY = data[20000:21000,1].astype(int)
 
 	#print(trainX)
 	print("trainY contains: ", np.unique(trainY))
@@ -98,10 +98,14 @@ def model():
 	LR = LogisticRegression()
 	LR = LR.fit(feature_table,trainY)
 
-	pred_feature = get_feature(testX)
+	algorithm_domains = dataset.load_simple_data()
+	algorithm_domains = list(set(algorithm_domains))
+	algorithm_y = [0]*len(algorithm_domains)
+
+	pred_feature = get_feature(algorithm_domains)
 	pred = LR.predict(pred_feature)
-	print(pred)
-	acc = accuracy_score(testY, pred)
+
+	acc = accuracy_score(algorithm_y, pred)
 	print("acc: ", acc)
 
 
