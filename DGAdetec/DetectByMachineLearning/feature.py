@@ -15,7 +15,7 @@ import dataset
 class FeatureExtractor(object):
 	"""docstring for ClassName"""
 	def __init__(self, domain_list):
-		self._domain_list = list(set(domain_list))
+		self._domain_list = domain_list
 		self._positive_domain_list = None
 		self._big_grame_model_path = './models/big_grame.pkl'
 		self._triple_grame_model_path = './models/tripple_gram.pkl'
@@ -89,7 +89,6 @@ class FeatureExtractor(object):
 				contains domian col and average jarccard index col
 		"""
 		positive_domain_list=self._positive_domain_list
-		positive_domain_list = set(positive_domain_list)
 
 		jarccard_index_list = []
 		for fake_domain in self._domain_list:
@@ -188,31 +187,32 @@ def get_feature(domain_list):
 
 	print("extracting count_aeiou....")
 	aeiou_df = extractor.count_aeiou()
-	print("extracted count_aeiou....\n")
+	print("extracted count_aeiou, shape is %d\n" % aeiou_df.shape[0])
 
 	print("extracting unique_rate....")
 	unique_rate_df = extractor.unique_char_rate()
-	print("extracted unique_rate.....\n")
+	print("extracted unique_rate, shape is %d\n" % unique_rate_df.shape[0])
 
-	print("extracting jarccard_index....")
-	jarccard_index_df = extractor.jarccard_index()
-	print("extracted jarccard_index.....\n")
+	#print("extracting jarccard_index....")
+	#jarccard_index_df = extractor.jarccard_index()
+	#print("extracted jarccard_index.....\n")
 
 	print("extracting entropy....")
 	entropy_df = extractor.entropy()
-	print("extracted entropy....\n")
+	print("extracted entropy, shape is %d\n"%entropy_df.shape[0])
 	
 	print("extracting n_grame....")
 	n_grame_df = extractor.n_grame()
-	print("extracted n_grame....\n")
+	print("extracted n_grame, shape is %d\n"%n_grame_df.shape[0])
 
 	print("merge all features on domains...")
 	multiple_df = [aeiou_df, unique_rate_df, 
-				  jarccard_index_df, entropy_df,
+				  entropy_df,
 				  n_grame_df]
 
-	df_final = reduce(lambda left,right: pd.merge(left,right,on='domain'), multiple_df)
+	df_final = reduce(lambda left,right: pd.merge(left,right,on='domain',how='left'), multiple_df)
 
+	print("merged all features, shape is %d\n"%df_final.shape[0])
 	# check df
 	std_rows = aeiou_df.shape[0]
 	df_final_rows = df_final.shape[0]
@@ -220,8 +220,9 @@ def get_feature(domain_list):
 	if std_rows != df_final_rows:
 		raise("row dosen't match after merged multiple_df")
 
+	df_final = df_final.drop(['domain'],axis=1)
 	df_final = df_final.round(3)
-	return df_final
+	return np.array(df_final)
 
 	
 

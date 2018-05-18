@@ -4,12 +4,12 @@ import numpy as np
 from feature import FeatureExtractor, get_feature
 
 ##############test load data##########
-data = dataset.load_simple_data()
+#data = dataset.load_simple_data()
 #data = data[1000:1010]
 #################################
 
 ######################TEST Feature extractor###################
-my_extractor = FeatureExtractor(data[6:10])
+#my_extractor = FeatureExtractor(data[6:10])
 
 ######################################################
 
@@ -70,8 +70,41 @@ my_extractor = FeatureExtractor(data[6:10])
 def model():
 	"""TODO MLmodel
 	"""
-	feature_table = get_feature(data)
-	print(feature_table)
+	from sklearn.linear_model import LogisticRegression
+	from sklearn.metrics import accuracy_score
+
+
+	data = dataset.load_data()
+	print("samples= ",data.shape)
+
+	print("dataY contains:", np.unique(data[:,1]))
+
+	data = pd.DataFrame(data, columns=['domain', 'label'])
+	data = data.drop_duplicates(subset='domain')
+	data = np.array(data)
+
+	trainX = data[:300,0]
+	trainY = data[:300,1].astype(int) 
+	testX = data[600:650, 0]
+	testY = data[600:650,1].astype(int)
+
+	#print(trainX)
+	print("trainY contains: ", np.unique(trainY))
+	#print(testX)
+	print("testY contains: ", np.unique(testY))
+
+	feature_table = get_feature(trainX)
+
+	LR = LogisticRegression()
+	LR = LR.fit(feature_table,trainY)
+
+	pred_feature = get_feature(testX)
+	pred = LR.predict(pred_feature)
+	print(pred)
+	acc = accuracy_score(testY, pred)
+	print("acc: ", acc)
+
+
 
 if __name__ == '__main__':
 	model()
