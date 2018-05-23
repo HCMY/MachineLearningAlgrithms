@@ -35,5 +35,17 @@ def word_train(word):
 	np.save('./models/word_count_matrix.npy', word_counts)
 
 
+def hmm_train(big_domain, big_y):
+	X = [[0]]
+	X_lens = [1]
+	for domain in self._domain_list:
+		vec = self._domain2vec(domain)
+		np_vec = np.array(vec)
+		X = np.concatenate([X, np_vec])
+		x_lens.append(len(np_vec))
+	remodel = hmm.GaussianHMM(n_components=N, covariance_type="full", n_iter=100)
+    remodel.fit(X,X_lens)
+    joblib.dump(remodel, './models/hmm_gmm.pkl')
+    
 
 

@@ -26,8 +26,11 @@ class FeatureExtractor(object):
 		self._positive_domain_list = self._load_positive_domain()
 
 	# check wether required files exis 
-	def _check_files(self, **args):
-		pass
+	def _check_files(self, *args):
+		for val in args:
+			if not os.path.exists(val):
+				raise ValueError("file{} doesn't exis, check scripts \
+					dataset and prepare_model ".format(val))
 
 
 	def _load_positive_domain(self):
@@ -88,7 +91,9 @@ class FeatureExtractor(object):
 		return: a pandas DataFrame, 
 				contains domian col and average jarccard index col
 		"""
-		positive_domain_list=self._positive_domain_list
+		
+		positive_domain_list = np.random.choice(self._positive_domain_list,500)
+		positive_domain_list = positive_domain_list.tolist()
 
 		jarccard_index_list = []
 		for fake_domain in self._domain_list:
@@ -105,9 +110,16 @@ class FeatureExtractor(object):
 
 		return jarccard_index_df
 
+
+	def _domain2vec(domain):
+		ver = []
+		for i in range(0. len(domain)):
+			ver.append([ord(domain[i])])
+		return ver
+
 	# TODO
 	def hmm_index(self):
-		pass
+		#TODO
 
 	'''
 	# calculate n_grame of each domains
@@ -158,11 +170,11 @@ class FeatureExtractor(object):
 		"""
 		return local grame differ with positive domains and word list
 		"""
-		'''self._check_files(self._positive_count_matrix,
+		self._check_files(self._positive_count_matrix,
 						  self._positive_grame_model_path,
 						  self._word_grame_model_path,
 						  self._word_count_matrix)
-		'''
+		
 		positive_count_matrix = np.load(self._positive_count_matrix)
 		positive_vectorizer = joblib.load(self._positive_grame_model_path)
 		word_count_matrix = np.load(self._word_count_matrix)
@@ -179,6 +191,29 @@ class FeatureExtractor(object):
 		
 		return n_grame_df
 
+	def digit_ratio(self):
+		digit_pattern = r'\d'
+		character_pattern = r'[A-Za-z]'
+		character_finder = re.compile(character_pattern)
+		digit_finder = re.compile(digit_pattern)
+		digit_ration_list = []
+
+		for domain in self._domain_list:
+			digit_len = len(digit_finder.findall(domain))
+			character_len = len(character_finder.findall(domain))
+			domain_len = len(domain)
+			digit_ratio = (digit_len+0.0)/domain_len
+			character_ratio = (character_len+0.0)/domain_len
+			tmp = [domain, digit_ratio, character_ratio]
+			digit_ration_list.append(tmp)
+		
+		digit_ration_df = pd.DataFrame(digit_ration_list, columns=['domain',
+																   'digit_ration',
+																   'character_ratio']
+																   )
+
+		return digit_ration_df
+
 
 
 
@@ -193,9 +228,9 @@ def get_feature(domain_list):
 	unique_rate_df = extractor.unique_char_rate()
 	print("extracted unique_rate, shape is %d\n" % unique_rate_df.shape[0])
 
-	#print("extracting jarccard_index....")
-	#jarccard_index_df = extractor.jarccard_index()
-	#print("extracted jarccard_index.....\n")
+	print("extracting jarccard_index....")
+	jarccard_index_df = extractor.jarccard_index()
+	print("extracted jarccard_index.....\n")
 
 	print("extracting entropy....")
 	entropy_df = extractor.entropy()
@@ -207,7 +242,7 @@ def get_feature(domain_list):
 
 	print("merge all features on domains...")
 	multiple_df = [aeiou_df, unique_rate_df, 
-				  entropy_df,
+				  entropy_df, jarccard_index_df,
 				  n_grame_df]
 
 	df_final = reduce(lambda left,right: pd.merge(left,right,on='domain',how='left'), multiple_df)
