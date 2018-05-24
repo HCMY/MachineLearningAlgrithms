@@ -46,6 +46,7 @@ def hmm_train(big_domain, big_y):
 	remodel = hmm.GaussianHMM(n_components=N, covariance_type="full", n_iter=100)
     remodel.fit(X,X_lens)
     joblib.dump(remodel, './models/hmm_gmm.pkl')
+
     
 
 

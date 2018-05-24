@@ -17,6 +17,7 @@ class FeatureExtractor(object):
 	def __init__(self, domain_list):
 		self._domain_list = domain_list
 		self._positive_domain_list = None
+		self._hmm_model_path = './models/hmm.pkl'
 		self._big_grame_model_path = './models/big_grame.pkl'
 		self._triple_grame_model_path = './models/tripple_gram.pkl'
 		self._positive_grame_model_path = './models/positive_grame.pkl'
@@ -113,13 +114,24 @@ class FeatureExtractor(object):
 
 	def _domain2vec(domain):
 		ver = []
-		for i in range(0. len(domain)):
+		for i in range(0, len(domain)):
 			ver.append([ord(domain[i])])
 		return ver
 
 	# TODO
 	def hmm_index(self):
-		#TODO
+		hmm_model = joblib.load(self._hmm_model_path)
+		hmm_index_list = []
+		for domain in self._domain_list:
+			vec = self._domain2vec(domian)
+			hmm_score = hmm_model.predict(vec)
+			tmp = [domain, hmm_score]
+			hmm_index_list.append(tmp)
+
+		hmm_index_list = pd.DataFrame(hmm_index_list, columns=['domain','hmm_index'])
+
+		return hmm_index_list
+
 
 	'''
 	# calculate n_grame of each domains
