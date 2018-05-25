@@ -11,3 +11,4 @@ _word_count_matrix = root_path+'/models/word_count_matrix.npy'
 
 
 _positive_domain_path = root_path+'/resource/aleax100k.npy'
+_std_postive_domain_path = root_path+'/resource/std_pos_domain.npy'
