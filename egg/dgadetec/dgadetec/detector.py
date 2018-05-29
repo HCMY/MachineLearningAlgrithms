@@ -5,7 +5,9 @@ import numpy as np
 import os
 
 root_path = os.path.dirname(__file__) 
-model = joblib.load(root_path+'/models/LR.pkl')
+GBM = joblib.load(root_path+'/models/GBM.pkl')
+LR = joblib.load(root_path+'/models/LR.pkl')
+SVM = joblib.load(root_path+'/models/SVM.pkl')
 
 class Detector(object):
 	'''
@@ -29,12 +31,24 @@ def predict(domain):
 	ckeck._pre_check(domain)
 
 	feature_table = feature.get_feature(domain)
-	pred_y = model.predict(feature_table)
-	pred_y = pred_y.tolist()
-		
-	ckeck._check(pred_y, len(domain))
+	pred_by_GBM = GBM.predict(feature_table)
+	pred_by_LR = LR.predict(feature_table)
+	pred_by_SVM = SVM.predict(feature_table)
 
-	return pred_y
+	pred_y = (pred_by_GBM+pred_by_SVM+pred_by_LR)/3.0
+
+	pred_y = pred_y.tolist()
+
+	y = []
+	for item in pred_y:
+		if item>0.5:
+			y.append(1)
+		else:
+			y.append(0)
+		
+	ckeck._check(y, len(domain))
+
+	return y
 
 
 

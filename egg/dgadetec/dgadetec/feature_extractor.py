@@ -17,14 +17,13 @@ positive_count_matrix = np.load(settings._positive_count_matrix)
 positive_vectorizer = joblib.load(settings._positive_grame_model_path)
 word_count_matrix = np.load(settings._word_count_matrix)
 word_vectorizer = joblib.load(settings._word_grame_model_path)
-std_positive_domain_center = np.load(settings.__std_postive_domain_path)
+std_positive_domain_center = np.load(settings._std_postive_domain_path)
 ####consistent stay in memory so that whole paorgame could be speeded
 
 class FeatureExtractor(object):
 	"""docstring for ClassName"""
 	def __init__(self, domain_list):
 		self._domain_list = domain_list
-		self._positive_domain_list = None
 		self._positive_domain_list = self._load_positive_domain()
 
 	# check wether required files exis 
@@ -127,8 +126,7 @@ class FeatureExtractor(object):
 				total_jarccard_index += self._jarccard2domain(fake_domain, std_domain)
 			
 			avg_jarccard_index = total_jarccard_index/len(positive_domain_list)
-			tmp = [fake_domain, avg_jarccard_index]
-			jarccard_index_list.append(tmp)
+			jarccard_index_list.append(avg_jarccard_index)
 
 		jarccard_index_list = np.asarray(jarccard_index_list)
 		return jarccard_index_list
@@ -137,15 +135,14 @@ class FeatureExtractor(object):
 
 def get_feature(domain_list):
 	extractor = FeatureExtractor(domain_list)
-
+	
 	aeiou_df = extractor.count_aeiou()
 	unique_rate_df = extractor.unique_char_rate()
 	entropy_df = extractor.entropy()
 	n_grame_df = extractor.n_grame()
-	jarccard_index_df = extractor().jarccard_index()
-
+	jarccard_index_df = extractor.jarccard_index()
+	
 	df_final = np.c_[aeiou_df, unique_rate_df, entropy_df, n_grame_df, jarccard_index_df]
-
 
 	std_rows = aeiou_df.shape[0]
 	df_final_rows = df_final.shape[0]
@@ -155,3 +152,4 @@ def get_feature(domain_list):
 	np.around(df_final, decimals=3, out=df_final)
 	
 	return df_final
+	
