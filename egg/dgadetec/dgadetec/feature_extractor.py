@@ -54,6 +54,8 @@ class FeatureExtractor(object):
 		count_result = np.asarray(count_result) 
 		return count_result
 
+	#set doamin and calculate its length 
+	#and the length account for full domain  
 	def unique_char_rate(self):
 		"""parameters: None
 		return: np.adarray like [["unique char len","unique char rate"]]

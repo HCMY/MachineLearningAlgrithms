@@ -5,6 +5,9 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.externals import joblib
 
+from . import settings
+from . import cluster
+
 def n_grame_train(big_domain, grame_range, model_name):
 	"""parameters:
 	big dimain: domains waiting to bed fitted
@@ -17,22 +20,23 @@ def n_grame_train(big_domain, grame_range, model_name):
 	joblib.dump(grame_model, './models/'+model_name)
 
 
+# generate n_grame from positive domain
 def positive_train(big_domain):
 	vec = CountVectorizer(analyzer='char', ngram_range=(3,5), min_df=1e-5, max_df=1.0)
 	grame_model = vec.fit(big_domain)
-	joblib.dump(grame_model, './models/positive_grame.pkl')
+	joblib.dump(grame_model, settings._positive_grame_model_path)
 	counts_matrix = grame_model.transform(big_domain)
 	positive_counts = np.log10(counts_matrix.sum(axis=0).getA1())
-	np.save('./models/positive_count_matrix.npy', positive_counts)
+	np.save(settings._positive_count_matrix , positive_counts)
 
 def word_train(word):
 	vec = CountVectorizer(analyzer='char', ngram_range=(3,5), min_df=1e-5, max_df=1.0)
 	grame_model = vec.fit(word)
-	joblib.dump(grame_model, './models/word_grame.pkl')
+	joblib.dump(grame_model, settings._word_grame_model_path)
 
 	counts_matrix = grame_model.transform(word)
 	word_counts =  np.log10(counts_matrix.sum(axis=0).getA1())
-	np.save('./models/word_count_matrix.npy', word_counts)
+	np.save(settings._word_count_matrix, word_counts)
 
 
 def hmm_train(big_domain, big_y):
@@ -47,9 +51,12 @@ def hmm_train(big_domain, big_y):
     remodel.fit(X,X_lens)
     joblib.dump(remodel, './models/hmm_gmm.pkl')
 
- 
+# generate std_pos_domain 
+def cluster(positive_doamins):
+	cluster.extract_point_domain(positive_doamins)
 
- def train_model():
+
+ def train_model(train_martix):
  	pass
  	
 
