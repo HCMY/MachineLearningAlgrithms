@@ -117,7 +117,6 @@ def extract_point_domain(domain_list):
 	point_domain = np.array(domain_list)[idx_list]
 	
 	#save like [domian1, domain2....]
-	print(point_domain)
 	np.save(settings._std_postive_domain_path, point_domain)
 
 

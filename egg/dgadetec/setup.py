@@ -14,10 +14,5 @@ setup(
     package_dir = {'dgadetec':'dgadetec'},
     package_data = {'dgadetec':['models/*','resource/*']},
 
-    install_requires=[
-        'scikit-learn',
-        'numpy',
-        'pandas',
-    ],
-    
+
 )

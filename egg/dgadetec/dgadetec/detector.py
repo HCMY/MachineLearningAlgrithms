@@ -3,11 +3,14 @@ from . import feature_extractor as  feature
 from sklearn.externals import joblib
 import numpy as np
 import os
+import pickle
 
 root_path = os.path.dirname(__file__) 
+
 GBM = joblib.load(root_path+'/models/GBM.pkl')
 LR = joblib.load(root_path+'/models/LR.pkl')
-SVM = joblib.load(root_path+'/models/SVM.pkl')
+SVM = joblib.load(root_path+'/models/SVM.pkl') 
+
 
 class Detector(object):
 	'''
