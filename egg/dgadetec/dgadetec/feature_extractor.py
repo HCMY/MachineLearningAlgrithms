@@ -21,6 +21,9 @@ root_path = os.path.dirname(__file__)
 
 
 def Counter(domain):
+	"""parameters
+	domain: type list, contain charactes
+	"""
 	count_dict = {}
 	for character in domain:
 		if count_dict.has_key(character):
@@ -160,7 +163,7 @@ class FeatureExtractor(object):
 		"""parameters:
 		positive_domain_list: positve samples list, 1Darray like
 		return: a pandas DataFrame, 
-				contains domian col and average jarccard index col
+				contains domain col and average jarccard index col
 		"""
 		positive_domain_list=std_positive_domain_center
 
@@ -186,6 +189,61 @@ class FeatureExtractor(object):
 		length_rank_list = np.asarray(length_rank_list)
 		return length_rank_list
 
+	"""
+	the K-L(Kullback-Leibler) divergence is a non-symmetric of distance
+	between two probability distribututions
+	The base distribution used by standars positive domain(std_postive_doamin)
+	and its test distribution by domain you enter in
+	Furthermore, here I changed a tiny bit formula, what I used formula is
+	"as-symmetric", reference documentation file instead  
+	"""
+	def _kl_divergence(self, test_domain, base_domain):
+		"""parameters: 
+		test_domain: test sigle domain as distribution for molecule
+		base_domains: a mixture single domain as distribution for division
+
+		return: the K-L divergence between test domain and base doamins
+		"""
+		test_domain_length = len(test_domain)+0.0
+		test_count_dict = Counter(list(test_domain))
+		
+		complete_domain_length = len(base_domain)+0.0
+		complete_domain_count_dict = Counter(list(base_domain))
+
+		kl_divergence_val = 0.0
+		for character in test_count_dict.keys():
+			if complete_domain_count_dict.has_key(character):
+				Q_i = complete_domain_count_dict[character]/complete_domain_length
+				P_i = (test_count_dict[character])/test_domain_length
+			 	kl_divergence_val += (P_i*math.log(P_i/Q_i, 2))
+			else:
+				continue
+				
+		return kl_divergence_val
+
+	def _merger(self, domains):
+		merged_domain = ''
+		for domain in domains:
+			merged_domain += domain
+		return merged_domain
+
+	def as_symmetric(self):
+		as_symmetric_list = []
+		for domain in self._domain_list:
+			kl_doamin_std = self._kl_divergence(test_domain=domain, 
+												base_domain=self._merger(std_positive_domain_center))
+
+			kl_std_domain = self._kl_divergence(test_domain=self._merger(std_positive_domain_center),
+												base_domain = domain)
+
+			as_symmetric_val = 0.5*(kl_doamin_std+kl_std_domain)
+			as_symmetric_list.append(as_symmetric_val)
+
+		return np.asarray(as_symmetric_list)
+
+
+
+
 
 def get_feature(domain_list):
 	extractor = FeatureExtractor(domain_list)
@@ -196,9 +254,11 @@ def get_feature(domain_list):
 	n_grame_df = extractor.n_grame()
 	jarccard_index_df = extractor.jarccard_index()
 	rank_df = extractor.length_rank()
-	
+	as_symmetric_df = extractor.as_symmetric()
+
 	df_final = np.c_[aeiou_df, unique_rate_df, entropy_df, 
-					 n_grame_df, jarccard_index_df, rank_df]
+					 n_grame_df, jarccard_index_df, rank_df,
+					 as_symmetric_df]
 
 	std_rows = aeiou_df.shape[0]
 	df_final_rows = df_final.shape[0]

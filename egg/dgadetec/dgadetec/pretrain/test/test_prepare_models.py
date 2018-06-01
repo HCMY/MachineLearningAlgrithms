@@ -123,7 +123,8 @@ def test_train_model():
 	from sklearn.linear_model import LogisticRegression
 	from sklearn.svm import SVC
 	from sklearn.ensemble import GradientBoostingClassifier
-
+	from sklearn.ensemble import RandomForestClassifier
+    
 
 	simpleLR = LogisticRegression()
 	simpleLR.fit(trainX, trainY)
@@ -143,13 +144,20 @@ def test_train_model():
 	acc, f1= metric_me(testY, pred_y_GBM)
 	print("simpleGBM acc={0} f1={1}".format(acc, f1))
 
+	simpleRF = RandomForestClassifier()
+	simpleRF.fit(trainX, trainY)
+	pred_y_RF = simpleRF.predict(testX)
+	acc, f1 = metric_me(testY, pred_y_RF)
+	print("simpleRF acc={0} f1={1}".format(acc, f1))
+
 
 	from sklearn.externals import joblib
 	joblib.dump(simpleLR, './dgadetec/models/LR.pkl')
 	joblib.dump(simpleSVM, './dgadetec/models/SVM.pkl')
 	joblib.dump(simpleGBM, './dgadetec/models/GBM.pkl')
+	joblib.dump(simpleRF, './dgadetec/models/RF.pkl')
 
-	pred_y = (pred_y_LR+pred_y_GBM+pred_y_SVM)/3.0
+	pred_y = (pred_y_LR+pred_y_GBM+pred_y_SVM+pred_y_RF)/4.0
 	
 	y = []
 	for item in pred_y:

@@ -115,7 +115,7 @@ $MatchPositiveDomain = PDC*TD^T$
 
 
 
-#### jarccard系数
+#### 5. jarccard系数
 > 两个域名A,B 之间的jarccard 系数为$$jarccard(A, B)=\frac{{A}\bigcap{B}}{{A}\bigcup{B}}$$
 >这里假设我们所要提取的特征的域名为A，正常域名为B，整个过程中，A需要和大量的正常域名B做系数计算， 再将这些系数相加取均值作为jarccard系数，公式如下
 >$$AvgJarccarc_a =\frac{\sum_{i=1}^{N}{jarccard(a,B_i)}}{M}, b\in B, a\in A$$
@@ -125,5 +125,11 @@ $MatchPositiveDomain = PDC*TD^T$
 6. **HMM** 隐性马尔科夫系数
 > 这部分的特征需要预先训练一个HMM模型，并预测域名的系数
 
-
+#### 7. KL离散系数(K-L divergence)
+两个域名$P,Q$之间的K-L系数表示为：
+$$D_{KL}(P, Q)=\sum_{i=1}^{n}P_i*log\frac{P_i}{Q_i}$$
+此处$n\in(a, b, c, ..., z...1,2,3..9)\in P$
+修改后的K-L离散系数特征公式为：
+$$D_{sym}(P, Q)=\frac{1}{2}\big(D_{KL}(P, Q) + D_{KL}(Q,P)\big)$$
+ 具体理论请参考这篇[paper](http://eprints.networks.imdea.org/67/1/Detecting_Algorithmically_Generated_Malicious_Domain_Names_-_2010_EN.pdf)
 ## 更新数据，更新模型

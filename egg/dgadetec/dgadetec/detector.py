@@ -24,10 +24,10 @@ class Detector(object):
 
 	def _pre_check(self, domain):
 		if not isinstance(domain, list):
-			raise ValueError("input should be a list, not {}".format(type(domain)))
+			raise ValueError("input should be a list, not {0}".format(type(domain)))
 
 		if not isinstance(domain[0], str):
-			raise ValueError("input inner element should be str, not{}".format(type(domain[0])))
+			raise ValueError("input inner element should be str, not{0}".format(type(domain[0])))
 
 def predict(domain):
 	ckeck = Detector()
