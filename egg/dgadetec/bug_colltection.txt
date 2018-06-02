@@ -1,0 +1,51 @@
+
+
+##############################BUG 1############################################################################################
+s domain bug--->', 'r._dns-sd._udp.\x80\xe2L\x01\xa0\x04L\x01\x01.')
+Traceback (most recent call last):
+  File "extstream.py", line 47, in <module>
+    domain_category = detector.predict([domain])
+  File "/usr/lib/python2.6/site-packages/dgadetec-1.0-py2.6.egg/dgadetec/detector.py", line 36, in predict
+    feature_table = feature.get_feature(domain)
+  File "/usr/lib/python2.6/site-packages/dgadetec-1.0-py2.6.egg/dgadetec/feature_extractor.py", line 196, in get_feature
+    n_grame_df = extractor.n_grame()
+  File "/usr/lib/python2.6/site-packages/dgadetec-1.0-py2.6.egg/dgadetec/feature_extractor.py", line 140, in n_grame
+    positive_grames = positive_count_matrix * positive_vectorizer.transform(self._domain_list).T
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 773, in transform
+    return self._term_count_dicts_to_matrix(term_counts_per_doc)
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 621, in _term_count_dicts_to_matrix
+    for i, term_count_dict in enumerate(term_count_dicts):
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 772, in <genexpr>
+    term_counts_per_doc = (Counter(analyze(doc)) for doc in raw_documents)
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 213, in <lambda>
+    return lambda doc: self._char_ngrams(preprocess(self.decode(doc)))
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 106, in decode
+    doc = doc.decode(self.charset, self.charset_error)
+  File "/usr/lib64/python2.6/encodings/utf_8.py", line 16, in decode
+    return codecs.utf_8_decode(input, errors, True)
+UnicodeDecodeError: 'utf8' codec can't decode byte 0x80 in position 15: invalid start byte
+#############################BUG 1###################################################################################################
+
+('here is domain bug--->', 'lb._dns-sd._udp.\xb0\xdb\xcd\x01\x80\xf4Z\x02.')
+Traceback (most recent call last):
+  File "extstream.py", line 47, in <module>
+    domain_category = detector.predict([domain])
+  File "/usr/lib/python2.6/site-packages/dgadetec-1.0-py2.6.egg/dgadetec/detector.py", line 36, in predict
+    feature_table = feature.get_feature(domain)
+  File "/usr/lib/python2.6/site-packages/dgadetec-1.0-py2.6.egg/dgadetec/feature_extractor.py", line 196, in get_feature
+    n_grame_df = extractor.n_grame()
+  File "/usr/lib/python2.6/site-packages/dgadetec-1.0-py2.6.egg/dgadetec/feature_extractor.py", line 140, in n_grame
+    positive_grames = positive_count_matrix * positive_vectorizer.transform(self._domain_list).T
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 773, in transform
+    return self._term_count_dicts_to_matrix(term_counts_per_doc)
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 621, in _term_count_dicts_to_matrix
+    for i, term_count_dict in enumerate(term_count_dicts):
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 772, in <genexpr>
+    term_counts_per_doc = (Counter(analyze(doc)) for doc in raw_documents)
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 213, in <lambda>
+    return lambda doc: self._char_ngrams(preprocess(self.decode(doc)))
+  File "/usr/lib64/python2.6/site-packages/sklearn/feature_extraction/text.py", line 106, in decode
+    doc = doc.decode(self.charset, self.charset_error)
+  File "/usr/lib64/python2.6/encodings/utf_8.py", line 16, in decode
+    return codecs.utf_8_decode(input, errors, True)
+UnicodeDecodeError: 'utf8' codec can't decode byte 0xb0 in position 16: invalid start byte
