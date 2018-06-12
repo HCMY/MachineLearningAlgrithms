@@ -30,6 +30,12 @@ class Detector(object):
 			raise ValueError("input inner element should be str, not{0}".format(type(domain[0])))
 
 def predict(domain):
+	"""parameters
+	@domain: It must be a vector or your programe will crash.
+
+	I used thress models, Gradiant Bosting Decision Tree、Logistic Regression and SVM for classify mission
+	at the end, I synthesize these models' predicted result, and select their mean value as final result
+	"""
 	ckeck = Detector()
 	ckeck._pre_check(domain)
 
