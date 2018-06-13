@@ -18,6 +18,7 @@
 - python2.7
 
 正常安装所需依赖后，公司内部下载获取dgadetec源码，解压后进入文件目录 
+安装过程因为涉及部署模型，所以在模型训练部署阶段速度会非常的慢
 >cd dgadetec
 > python setup.py install
 
@@ -123,7 +124,8 @@ $MatchPositiveDomain = PDC*TD^T$
 
 
 6. **HMM** 隐性马尔科夫系数
-> 这部分的特征需要预先训练一个HMM模型，并预测域名的系数
+> 这部分的特征需要预先训练一个联合高斯分HMM（隐性马尔可夫模型），并预测域名的系数。训练过程中，数据使用正常域名而非DGA域名，此处使用的是Alexa100k的域名，因为机器资源以及训练时间问题，只选择了其中的500个域名<shuffer后>
+> 其中，HMM系数越接近0则越贴合模型，表示域名更接近正常人所取的名称，而非机器。也就是读起来很顺口
 
 #### 7. KL离散系数(K-L divergence)
 两个域名$P,Q$之间的K-L系数表示为：
@@ -132,4 +134,13 @@ $$D_{KL}(P, Q)=\sum_{i=1}^{n}P_i*log\frac{P_i}{Q_i}$$
 修改后的K-L离散系数特征公式为：
 $$D_{sym}(P, Q)=\frac{1}{2}\big(D_{KL}(P, Q) + D_{KL}(Q,P)\big)$$
  具体理论请参考这篇[paper](http://eprints.networks.imdea.org/67/1/Detecting_Algorithmically_Generated_Malicious_Domain_Names_-_2010_EN.pdf)
+
 ## 更新数据，更新模型
+##### 对于更新模型数据：替换在[resource](#)录下你想要更新的文件，其中
+- **train.npy**: 为模型所依赖的训练数据，格式为：numpy存储格式npy，2D矩阵（域名,标签），域名需要包括正常域名和DGA域名，标签为 0或1。
+- **aleax100k.npy**：正常域名集合，无标签只有域名，1D向量
+- **words.csv**:单词文件，不需要替换
+
+## 参考论文
+papers目录下的论文，大部分参考
+- *“dga_relarion_paper_implementation“*

@@ -208,7 +208,7 @@ def main():
 	print('library is deploying...It would be better if you have a rest in another minutes^^\n')
 
 	positive_domains_vec = np.load(settings._positive_domain_path)
-	'''
+	
 	positive_train(positive_domains_vec)
 	print("positive_train done\n")
 
@@ -228,7 +228,7 @@ def main():
 	print('maintain_aeiou_rank_table done\n')
 	maintain_length_rank_table(positive_domains_vec)
 	print('maintain_length_rank_table done\n')
-	'''
+	
 	hmm_train(positive_domains_vec[:100])
 	print("GaussianHMM model done\n")
 
