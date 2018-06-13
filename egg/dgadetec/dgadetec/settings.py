@@ -22,6 +22,7 @@ _std_postive_domain_path = root_path+'/resource/std_pos_domain.npy'
 _length_rank_table = root_path+'/resource/length_rank_table.npy'
 _aeiou_rank_table = root_path+'/resource/aeiou_rank_table.npy'
 
+_model_GauseHMM_path = root_path+'/models/GauseHMM.pkl'
 
 _model_LR_path = root_path+'/models/LR.pkl'
 _model_SVM_path = root_path+'/models/SVM.pkl'

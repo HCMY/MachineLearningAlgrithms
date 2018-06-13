@@ -28,5 +28,6 @@ std_positive_domain_center = np.load(settings._std_postive_domain_path)
 length_stdrank_table = np.load(settings._length_rank_table)
 aeiou_stdrank_table = np.load(settings._aeiou_rank_table)
 
+hmm_model = joblib.load(settings._model_GauseHMM_path)
 ####consistent stay in memory so that whole paorgame could be speeded
 

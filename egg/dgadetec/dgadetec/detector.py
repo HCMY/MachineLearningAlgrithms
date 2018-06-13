@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 from . import feature_extractor as  feature
 
 from sklearn.externals import joblib

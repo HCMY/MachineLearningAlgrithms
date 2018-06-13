@@ -9,11 +9,13 @@ from functools import reduce
 import cPickle as pickle
 
 from . import settings
+
 from . prefilesloader import (positive_vectorizer, 
 							 positive_count_matrix,
 							 std_positive_domain_center,
 							 length_stdrank_table,
-							 aeiou_stdrank_table)
+							 aeiou_stdrank_table,
+							 hmm_model)
 
 
 root_path = os.path.dirname(__file__)
@@ -44,6 +46,15 @@ def _min_max_normalizer(matrix, idx_set):
 		matrix[:, idx] = (matrix[:, idx]-min_val)/(max_val-min_val)
 	return matrix
 
+
+def _domain2vec(domain):
+	"""parameters:
+	@domain: string-like, not vector, a single domain
+	"""
+	ver = []  
+	for i in range(len(domain)):  
+		ver.append([ord(domain[i])])  
+	return ver 
 
 
 def _rank_it(std_rank, target):
@@ -241,8 +252,16 @@ class FeatureExtractor(object):
 
 		return np.asarray(as_symmetric_list)
 
-
-
+	def hmm_index(self):
+		"""
+		calculate GauseHMM index
+		"""
+		hmm_index_list = []
+		for domain in self._domain_list:
+			domain_vec = _domain2vec(domain)
+			hmm_index_val = hmm_model.score(domain_vec)
+			hmm_index_list.append(hmm_index_val)
+		return np.asarray(hmm_index_list) 
 
 
 def get_feature(domain_list):
@@ -255,10 +274,11 @@ def get_feature(domain_list):
 	jarccard_index_df = extractor.jarccard_index()
 	rank_df = extractor.length_rank()
 	as_symmetric_df = extractor.as_symmetric()
+	hmm_index_df = extractor.hmm_index()
 
 	df_final = np.c_[aeiou_df, unique_rate_df, entropy_df, 
 					 n_grame_df, jarccard_index_df, rank_df,
-					 as_symmetric_df]
+					 as_symmetric_df, hmm_index_df]
 
 	std_rows = aeiou_df.shape[0]
 	df_final_rows = df_final.shape[0]

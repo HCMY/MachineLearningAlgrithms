@@ -13,6 +13,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn import metrics
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn import hmm
 
 from dgadetec import settings
 from dgadetec.pretrain.cluster import extract_point_domain
@@ -181,11 +182,33 @@ def maintain_aeiou_rank_table(big_positive_doamins):
 	aeiou_length_list.sort()
 	np.save(settings._aeiou_rank_table, aeiou_length_list)
 
+def _domain2vec(domain):
+	"""parameters:
+	@domain: string-like, not vector, a single domain
+	"""
+	ver = []  
+	for i in range(len(domain)):  
+		ver.append([ord(domain[i])])  
+	return ver  
 
-if __name__ == '__main__':
-	
+def hmm_train(big_positive_domain):
+	X = [[0]]
+	for domain in big_positive_domain:
+		vec = _domain2vec(domain)
+		np_vec = np.array(vec)
+		X = np.concatenate([X, np_vec])
+		
+	model = hmm.GaussianHMM(n_components=8, covariance_type="full", n_iter=100)
+	model.fit([X])
+	joblib.dump(model, settings._model_GauseHMM_path)
+
+
+
+def main():
+	print('library is deploying...It would be better if you have a rest in another minutes^^\n')
+
 	positive_domains_vec = np.load(settings._positive_domain_path)
-	
+	'''
 	positive_train(positive_domains_vec)
 	print("positive_train done\n")
 
@@ -199,13 +222,16 @@ if __name__ == '__main__':
 	word_train(word_dataframe['word'])
 	print('word_train done\n')
 	
-	cluster(positive_domains_vec[:500])
+	cluster(positive_domains_vec[:2000])
 	print('cluster done\n')
 	maintain_aeiou_rank_table(positive_domains_vec)
 	print('maintain_aeiou_rank_table done\n')
 	maintain_length_rank_table(positive_domains_vec)
 	print('maintain_length_rank_table done\n')
-	
+	'''
+	hmm_train(positive_domains_vec[:100])
+	print("GaussianHMM model done\n")
+
 	print('start train models\n')
 	train_all_models()
 	

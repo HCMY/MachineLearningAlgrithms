@@ -170,3 +170,26 @@ def test_train_model():
 	print("simpleMixture acc={0} f1={1}".format(acc, f1))
 
 
+def _domain2vec(domain):  
+	ver = []  
+	for i in range(len(domain)):  
+		ver.append([ord(domain[i])])  
+	return ver  
+
+def test_hmm():
+	#test use positive only
+	#positive_domains = np.load(settings._positive_domain_path)
+	#pm.hmm_train(positive_domains[:100])
+	from sklearn.externals import joblib
+	hmm = joblib.load(settings._model_GauseHMM_path)
+	domains  = ['www.baidu.com','www.dashjdhasjfsdfd.com']
+
+	X = [[0]]
+	for domain in domains:
+		vec = _domain2vec(domain)
+		np_vec = np.array(vec)
+		X = np.concatenate([X, np_vec])
+		hmm_score = hmm.score(X)
+		print('hmm score is: ',hmm_score)
+
+

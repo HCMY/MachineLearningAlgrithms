@@ -1,4 +1,7 @@
 from setuptools import setup
+import deploy
+
+deploy.main()
 
 setup(
     name="dgadetec", 

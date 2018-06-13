@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.externals import joblib
+from sklearn import hmm
 
 from dgadetec import settings
 from . import cluster
@@ -43,17 +44,23 @@ def word_train(word):
 	np.save(settings._word_count_matrix, word_counts)
 
 
-def hmm_train(big_domain, big_y):
+def _domain2vec(domain):  
+	ver = []  
+	for i in range(len(domain)):  
+		ver.append([ord(domain[i])])  
+	return ver  
+
+
+def hmm_train(big_domain):
 	X = [[0]]
-	X_lens = [1]
-	for domain in self._domain_list:
-		vec = self._domain2vec(domain)
+	for domain in big_domain:
+		vec = _domain2vec(domain)
 		np_vec = np.array(vec)
 		X = np.concatenate([X, np_vec])
-		x_lens.append(len(np_vec))
-	remodel = hmm.GaussianHMM(n_components=N, covariance_type="full", n_iter=100)
-	remodel.fit(X,X_lens)
-	pickle.dump(remodel, './models/hmm_gmm.pkl')
+		
+	model = hmm.GaussianHMM(n_components=8, covariance_type="full", n_iter=100)
+	model.fit([X])
+	joblib.dump(model, settings._model_GauseHMM_path)
 
 # generate std_pos_domain 
 def cluster(positive_doamins):
