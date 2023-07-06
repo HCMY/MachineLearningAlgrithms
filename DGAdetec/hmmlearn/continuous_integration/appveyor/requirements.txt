@@ -10,7 +10,7 @@
 # source tarball published on PyPI
 pytest
 numpy==1.9.3
-scipy==0.16.0
+scipy==1.10.0
 scikit-learn
 wheel
 wheelhouse_uploader
